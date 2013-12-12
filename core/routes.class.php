@@ -4,7 +4,6 @@
      * 
      * @package     MagicPHP
      * @author      André Henrique da Rocha Ferreira <andrehrf@gmail.com>
-     * @copyright   Copyright (c) 2013, T&M Network, Inc.
      * @link        https://github.com/andrehrf/magicphp MagicPHP(tm)
      * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
      */
@@ -68,22 +67,54 @@
          */
         public static function Parse(){
             $oThis = self::CreateInstanceIfNotExists();
-            $sRoot = str_replace("index.php", "", $_SERVER["SCRIPT_NAME"]);
+            $sRoot = str_replace("index.php", "", $_SERVER["SCRIPT_NAME"]."@");
+            
+            if($sRoot == "/@")//Bugfix
+                $sRoot = "";
+            
             $sUri = str_replace($sRoot, "", $_SERVER["REQUEST_URI"]);
             $aParsedRoute = explode("/", $sUri);
             $mID = (array_key_exists(1, $aParsedRoute)) ? $aParsedRoute[1] : null;
-            
-            Storage::Set("route.root", $_SERVER["REQUEST_SCHEME"]."://".$_SERVER["SERVER_NAME"].str_replace("index.php", "", $_SERVER["SCRIPT_NAME"]));
+            $sMethod = $oThis->Restful(); 
                         
-            if(!empty($aParsedRoute[0]) || !$oThis->bOverloadFrontend)
-                Bootstrap::AutoLoad(((!empty($aParsedRoute[0])) ? strtolower($aParsedRoute[0]) : "frontend"));
+            Storage::Set("route.root", "//".$_SERVER["SERVER_NAME"].str_replace("index.php", "", $_SERVER["SCRIPT_NAME"]));
+
+            if(!$oThis->bOverloadFrontend){
+                $bResult = Bootstrap::AutoLoad(((!empty($aParsedRoute[0]) && $aParsedRoute[0] != "/") ? strtolower(str_replace("@", "", $aParsedRoute[0])) : "main"));
+                
+                if(!$bResult)
+                    Bootstrap::AutoLoad("main");
+            }
             
-            $sMethod = $oThis->Restful();
+            $sUri = preg_replace("/\?(.*?)@/", "@", $sUri);//Removendo path
+            $sUri = preg_replace("/\#(.*?)@/", "@", $sUri);//Removendo path
                         
-            if(array_key_exists($sMethod."_".$sUri, $oThis->aRoutes))
-                $oThis->aRoutes[$sMethod."_".$sUri]($mID);
-            else if(array_key_exists("__dynamicroute", $oThis->aRoutes))
-                $oThis->aRoutes["__dynamicroute"]($sUri, $sMethod);
+            $bCall = false;
+                      
+            foreach($oThis->aRoutes as $sRoute => $fFunc){
+                $sRoute = preg_replace("/{.*?}/i", "(.*?)", $sRoute);
+                $sRoute = str_replace("/", "\/", $sRoute);
+                                             
+                if(preg_match_all("/@".$sRoute."@/", "@".$sMethod."_".$sUri, $aMatches)){            
+                    $aParams = array();
+
+                    foreach($aMatches as $iKey => $aResult){
+                        if($iKey > 0){
+                            $sParam = (strpos($aResult[0], "/")) ? preg_replace("/@*\/(.*?)@/", "", "@".$aResult[0]."@") : $aResult[0];
+                            $aParams[] = str_replace("@", "", $sParam);
+                        }
+                    }
+                            
+                    $bCall = true; 
+                    call_user_func_array($fFunc, $aParams);
+                    break;
+                }              
+            }
+
+            if(array_key_exists("__dynamicroute", $oThis->aRoutes) && !$bCall)
+                call_user_func_array($oThis->aRoutes["__dynamicroute"], array()); 
+            else
+                Output::SendHTTPCode(404);
         }
         
         /**
@@ -123,9 +154,9 @@
          */
         public static function Restful(){
             if($_SERVER["REQUEST_METHOD"] == "POST" && array_key_exists("HTTP_X_HTTP_METHOD", $_SERVER))
-                return $_SERVER["HTTP_X_HTTP_METHOD"];
+                return strtoupper($_SERVER["HTTP_X_HTTP_METHOD"]);
             else
-                return $_SERVER["REQUEST_METHOD"];
+                return strtoupper($_SERVER["REQUEST_METHOD"]);
         }
         
         /**

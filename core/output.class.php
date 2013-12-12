@@ -4,7 +4,6 @@
      * 
      * @package     MagicPHP
      * @author      André Henrique da Rocha Ferreira <andrehrf@gmail.com>
-     * @copyright   Copyright (c) 2013, T&M Network, Inc.
      * @link        https://github.com/andrehrf/magicphp MagicPHP(tm)
      * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
      */
@@ -454,7 +453,7 @@
             header('HTTP/1.1 200 OK');
             header("Content-Type: text/html; charset=" . strtoupper(Storage::Get("app.charset", "UTF-8")), true);
                 
-            if(Storage::Get("debug", false)){
+            /*if(Storage::Get("debug", false)){
                 header("Expires: 0");
                 header("Cache-Control: no-cache, must-revalidate");
                 header("Pragma: no-cache"); 
@@ -467,7 +466,7 @@
             }
             
             header("MagicPHP 0.1b");
-            header("Connection: close");
+            header("Connection: close");*/
                     
             try{
                 //var_dump($oThis->sBuffer);die();
