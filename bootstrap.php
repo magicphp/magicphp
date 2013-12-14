@@ -36,7 +36,9 @@
          */
         public static function Start(){
             $oThis = self::CreateInstanceIfNotExists();
-            spl_autoload_register(array($oThis, "AutoLoad"));//Configurando autoload 
+            
+            //setting autoload
+            spl_autoload_register(array($oThis, "AutoLoad")); 
                        
             //Configuring basic directories
             Storage::Set("dir.root", __DIR__ . SP);
@@ -73,7 +75,9 @@
         public static function AutoLoad($sClassName){
             if(!class_exists($sClassName, false)){
                 $bResult = false;
-                $sClassName = strtolower($sClassName); //Reduzindo a caixa do nome da classe
+                
+                //putting in small letters the class name
+                $sClassName = strtolower($sClassName); 
                 $aDiretoryList = array(__DIR__ . SP, 
                                        __DIR__ . SP . "core" . SP, 
                                        __DIR__ . SP . "routes" . SP);

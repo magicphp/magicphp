@@ -84,27 +84,27 @@
                     Storage::Set("session.id", session_id());
 
                     switch($_SERVER["SERVER_ADDR"]){
-                        case "127.0.0.1"://Configuração para modo desenvolvimento
+                        case "127.0.0.1"://Setting to developer mode
                         case "::1":
                             $iTimeout = time()+3600;	
-                            session_cache_expire(60); //Almenta o tempo de cache da sessão para 60min
-                            session_cache_limiter("nocache"); //Define o limitador do cache para 'nocache'
-                            Storage::Set("session.timeout", $iTimeout); //Definindo timeout de termino da sessão
+                            session_cache_expire(60); //Increases the cache time of the session to 60 minutes
+                            session_cache_limiter("nocache"); //Sets the cache limiter to 'nocache'
+                            Storage::Set("session.timeout", $iTimeout); //Setting the timeout session ends
                         break;
                         default:
                             $iTimeout = time()+900;
-                            session_cache_expire(15); //Diminui o tempo de cache da sessão para 15min
-                            session_cache_limiter("private"); //Define o limitador do cache para 'private'
-                            Storage::Set("session.timeout", $iTimeout); //Definindo timeout de termino da sessão
+                            session_cache_expire(15); //Shortens the session cache for 15 minutes
+                            session_cache_limiter("private"); //Sets the cache limiter to 'private'
+                            Storage::Set("session.timeout", $iTimeout); //Setting the timeout session ends
                         break;
                     }
 
-                    //Gravando informações da sessão
+                    //Recording session information
                     Storage::Set("session.cache.limiter", session_cache_limiter());
                     Storage::Set("session.cache.expire", session_cache_expire());
                     Storage::Set("session.cookie.enable", array_key_exists($sName, $_COOKIE));
                    
-                    //Verificando informações de autenticação	
+                    //Verifying authentication information
                     if(array_key_exists($oThis->sName, $_SESSION)){
                         if(array_key_exists("authentication", $_SESSION[$oThis->sName]))
                             $oThis->aAuth = $_SESSION[$oThis->sName]["authentication"];

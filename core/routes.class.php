@@ -86,8 +86,8 @@
                     Bootstrap::AutoLoad("main");
             }
             
-            $sUri = preg_replace("/\?(.*?)@/", "@", $sUri);//Removendo path
-            $sUri = preg_replace("/\#(.*?)@/", "@", $sUri);//Removendo path
+            $sUri = preg_replace("/\?(.*?)@/", "@", $sUri);//Removing path
+            $sUri = preg_replace("/\#(.*?)@/", "@", $sUri);//Removing path
                         
             $bCall = false;
                       
