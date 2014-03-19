@@ -9,6 +9,8 @@
      */
 
     require_once(__DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php");
+    require_once(__DIR__ . DIRECTORY_SEPARATOR . "routes.php");
+    
     Bootstrap::Start();
     Bootstrap::AutoLoad("settings");
     Routes::Parse();   

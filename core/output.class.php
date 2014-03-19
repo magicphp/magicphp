@@ -184,7 +184,7 @@
          * @param boolean $bForce Forcing creation
          * @return void
          */
-        private static function CreateCacheCSS($bForce){ 
+        public static function CreateCacheCSS($bForce){ 
             $oThis = self::CreateInstanceIfNotExists();
             
             if(count($oThis->aCSS) > 0){
@@ -197,7 +197,9 @@
                     foreach($oThis->aCSS as $sAppendBuffer)
                         $sBuffer .= $sAppendBuffer;
                     
-                    $sBuffer = $oThis->MinifyCSS($sBuffer);
+                    if(!Storage::Get("debug", false))
+                        $sBuffer = $oThis->MinifyCSS($sBuffer);
+                    
                     file_put_contents($sCacheFilename, $sBuffer);
                 }
             } 
@@ -227,7 +229,7 @@
          * @param boolean $bForce Forcing creation
          * @return void
          */
-        private static function CreateCacheJS($bForce){ 
+        public static function CreateCacheJS($bForce){ 
             $oThis = self::CreateInstanceIfNotExists();
             
             if(count($oThis->aJS) > 0){
@@ -369,10 +371,20 @@
             $oThis->sBuffer = str_replace("{end}", "<?php } ?>", $oThis->sBuffer);
             $Offset = 0;
             
+            $aC = "abcdefghijklmnopqrstuvxzywABCDEFGHIJKLMNOPQRSTUVXZWY";
+            $sHash = "";
+            
+            for($i = 0; $i < 10; $i++)
+                $sHash .= substr($aC, rand(0, strlen($aC)), 1);
+                        
             while(preg_match('/{list\:(.*?)}/i', $oThis->sBuffer, $aMatches, PREG_OFFSET_CAPTURE, $Offset)){
                 if($aMatches[1][0] == $sListName){
-                    $sList = "\$aList = json_decode('". json_encode($aData) ."', true);";
-                    $oThis->sBuffer = str_replace($aMatches[0][0], "<?php ".$sList."\r\n foreach(\$aList as \$aItem){ ?>", $oThis->sBuffer);
+                    if(!empty($aData))
+                        $sList = "\${$sHash} = unserialize(base64_decode('". base64_encode(serialize($aData)) ."'));";
+                    else
+                        $sList = "\${$sHash} = array();";
+                                                         
+                    $oThis->sBuffer = str_replace($aMatches[0][0], "<?php  ".$sList."\r\n if(count(\${$sHash}) > 0) foreach(\${$sHash} as \${$sListName}){ ?>", $oThis->sBuffer);
                 }
                 
                 $Offset = $aMatches[0][1]+strlen($aMatches[0][0]);
@@ -380,9 +392,30 @@
             
             $Offset = 0;
             
-            while(preg_match('/{list\.(.*?)}/i', $oThis->sBuffer, $aMatches, PREG_OFFSET_CAPTURE, $Offset)){
-                $oThis->sBuffer = str_replace($aMatches[0][0], "<?php echo \$aItem[\"".$aMatches[1][0]."\"]; ?>", $oThis->sBuffer);
+            while(preg_match('/{list\.(.*?)\.(.*?)}/i', $oThis->sBuffer, $aMatches, PREG_OFFSET_CAPTURE, $Offset)){
+                $oThis->sBuffer = str_replace($aMatches[0][0], "<?php echo \$".$aMatches[1][0]."[\"".$aMatches[2][0]."\"]; ?>", $oThis->sBuffer);
                 $Offset = $aMatches[0][1]+strlen($aMatches[0][0]);
+            }
+        }
+        
+        /**
+         * Function to extract the template lists
+         * 
+         * @static
+         * @access public
+         * @param string $sListName
+         * @return void
+         */
+        public static function ExtractList($sListName){
+            $oThis = self::CreateInstanceIfNotExists();
+            $iStart = strpos($oThis->sBuffer, "{list:{$sListName}}");
+            
+            if($iStart > 0)
+                $iEnd = strpos($oThis->sBuffer, "{end}", $iStart);
+            
+            if($iStart > 0 && $iEnd > 0){
+                $sNewBuffer = substr($oThis->sBuffer, $iStart, $iEnd-$iStart);
+                $oThis->sBuffer = $sNewBuffer."{end}";
             }
         }
              
@@ -448,26 +481,11 @@
             $oThis->ReplaceVars(); 
             $oThis->RemoveUndefinedVars(); 
             $oThis->CheckConditions(); 
-            //Events::BeforeSendingOutput();
+            Events::Call("BeforeSendingOutput");
             
             header('HTTP/1.1 200 OK');
             header("Content-Type: text/html; charset=" . strtoupper(Storage::Get("app.charset", "UTF-8")), true);
-                
-            /*if(Storage::Get("debug", false)){
-                header("Expires: 0");
-                header("Cache-Control: no-cache, must-revalidate");
-                header("Pragma: no-cache"); 
-                header("Cache: no-cache");  
-            }
-            else{
-                header("Expires: " . date("D, d M Y H:i:s", time() + ( 365 * 24 * 60 * 60 )) . " GMT"); //Adicionando timeout de 1 ano o cache para o cache
-                header("Cache-Control: private, no-cache, no-store, must-revalidate");
-                header("Pragma: no-cache"); 
-            }
-            
-            header("MagicPHP 0.1b");
-            header("Connection: close");*/
-                    
+                  
             try{
                 //var_dump($oThis->sBuffer);die();
                 
