@@ -9,8 +9,6 @@
      */
 
     require_once(__DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php");
-    require_once(__DIR__ . DIRECTORY_SEPARATOR . "routes.php");
-    
     Bootstrap::Start();
     
     if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "routes.php"))
