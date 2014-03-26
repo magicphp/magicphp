@@ -8,7 +8,7 @@
      * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
      */
 
-    Routes::SetDynamicRoute(function($sUri, $sMethod){   
+    Routes::SetDynamicRoute(function(){   
         Storage::Set("title","Hello World");
         Output::SetNamespace("helloworld");
         Output::SetTemplate(Storage::Join("dir.shell.default.tpl", "index.tpl"));

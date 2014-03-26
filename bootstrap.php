@@ -4,12 +4,12 @@
      * 
      * @package     MagicPHP
      * @author      André Henrique da Rocha Ferreira <andrehrf@gmail.com>
-     * @link        https://github.com/andrehrf/magicphp MagicPHP(tm)
+     * @link        https://github.com/andrehrf/magicphp MagicPHP(tm) 
      * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
      */
 
     if(!defined("SP")) define("SP", DIRECTORY_SEPARATOR, true);
-    
+     
     class Bootstrap{
         /**
          * Function to auto instance
@@ -44,7 +44,6 @@
             Storage::Set("dir.root", __DIR__ . SP);
             Storage::Set("dir.shell", __DIR__ . SP . "shell" . SP);
             Storage::Set("dir.core", __DIR__ . SP . "core" . SP);
-            Storage::Set("dir.routes", __DIR__ . SP . "routes" . SP);
             Storage::Set("dir.cache", __DIR__ . SP . "cache" . SP);
             Storage::Set("dir.modules", __DIR__ . SP . "modules" . SP);
             
@@ -54,14 +53,7 @@
             Storage::Set("dir.shell.default.css", Storage::Join("dir.shell.default", "css" . SP));
             Storage::Set("dir.shell.default.js", Storage::Join("dir.shell.default", "js" . SP));
             Storage::Set("dir.shell.default.img", Storage::Join("dir.shell.default", "img" . SP));
-            
-            //Configuring generic template directories
-            Storage::Set("dir.shell.generic", Storage::Join("dir.shell", "generic" . SP));
-            Storage::Set("dir.shell.generic.tpl", Storage::Join("dir.shell.generic", "tpl" . SP));
-            Storage::Set("dir.shell.generic.css", Storage::Join("dir.shell.generic", "css" . SP));
-            Storage::Set("dir.shell.generic.js", Storage::Join("dir.shell.generic", "js" . SP));
-            Storage::Set("dir.shell.generic.img", Storage::Join("dir.shell.generic", "img" . SP));
-            
+                    
             $oThis->LoadModules();
         }
         
@@ -78,9 +70,7 @@
                 
                 //putting in small letters the class name
                 $sClassName = strtolower($sClassName); 
-                $aDiretoryList = array(__DIR__ . SP, 
-                                       __DIR__ . SP . "core" . SP, 
-                                       __DIR__ . SP . "routes" . SP);
+                $aDiretoryList = array(__DIR__ . SP . "core" . SP, __DIR__ . SP);
                 
                 if(class_exists("Storage")){
                     $aDynamicList = Storage::Get("class.list");
