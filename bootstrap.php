@@ -70,8 +70,7 @@
                 
                 //putting in small letters the class name
                 $sClassName = strtolower($sClassName); 
-                $aDiretoryList = array(__DIR__ . SP, 
-                                       __DIR__ . SP . "core" . SP);
+                $aDiretoryList = array(__DIR__ . SP . "core" . SP, __DIR__ . SP);
                 
                 if(class_exists("Storage")){
                     $aDynamicList = Storage::Get("class.list");
