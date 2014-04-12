@@ -11,3 +11,7 @@ The simplest framework for PHP, create project like magic, perform on-demand req
     Output::AppendCSS(Storage::Join("dir.shell.default.css", "index.css"));
     Output::Send();
 });</code></pre>
+
+See the documentation at:
+
+http://magicphp.org
