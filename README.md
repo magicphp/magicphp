@@ -14,4 +14,4 @@ The simplest framework for PHP, create project like magic, perform on-demand req
 
 See the documentation at:
 
-http://magicphp.org
+http://magicphp.com.br
