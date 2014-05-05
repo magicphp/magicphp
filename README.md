@@ -7,11 +7,11 @@ The idea is to be simple! There are many PHP frameworks on the Internet with gen
 
 ## Official Documentation
 
-Documentation for the entire framework can be found on the [MagicPHP website](http://laravel.com/docs).
+Documentation for the entire framework can be found on the [MagicPHP website](http://magicphp.org/).
 
-### Contributing To Laravel
+### Contributing To MagicPHP
 
-**All issues and pull requests should be filed on the [laravel/framework](https://github.com/andrehrf/magicphp) repository.**
+**All issues and pull requests should be filed on the [andrehrf/magicphp](https://github.com/andrehrf/magicphp) repository.**
 
 ### License
 
