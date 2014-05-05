@@ -122,4 +122,16 @@
             $oThis = self::CreateInstanceIfNotExists();
             return (array_key_exists($sKey, $oThis->aList)) ? ((is_string($oThis->aList[$sKey])) ? $oThis->aList[$sKey].$sAppend : false)  : false;
         }
+        
+        /**
+         * Function to return all values ​​stored
+         * 
+         * @statis
+         * @access public
+         * @return array
+         */
+        public static function GetList(){
+            $oThis = self::CreateInstanceIfNotExists();
+            return $oThis->aList;
+        }
     }
