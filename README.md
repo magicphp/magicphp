@@ -1,8 +1,5 @@
 ## MagicPHP
 
-[![Total Downloads](https://img.shields.io/packagist/dm/magicphp/framework.svg)](https://packagist.org/packages/magicphp/magicphp)
-[![Latest Version](http://img.shields.io/github/tag/magicphp/framework.svg)](https://github.com/andrehrf/magicphp/releases)
-
 The idea is to be simple! There are many PHP frameworks on the Internet with generic solutions and dozens of options for simple tasks, using complex models and tiring documentation. The MagicPHP have a different proposal, start your application with minimal use and demand modules, has complete freedom to use any feature available in a simple way.
 
 ## Official Documentation
