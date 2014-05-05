@@ -118,7 +118,10 @@
                     require_once($sModuleDiretory . SP . "settings.php");       
                         
                 if(file_exists($sModuleDiretory . SP . "include.php") && $bStatus)
-                    require_once($sModuleDiretory . SP . "include.php");                
+                    require_once($sModuleDiretory . SP . "include.php");  
+                
+                if(file_exists($sModuleDiretory . SP . "routes.php") && $bStatus)
+                    require_once($sModuleDiretory . SP . "routes.php");
             }
         }
     }
