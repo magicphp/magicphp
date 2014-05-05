@@ -13,6 +13,9 @@
     
     if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "routes.php"))
         require_once(__DIR__ . DIRECTORY_SEPARATOR . "routes.php"); 
+        
+    if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php"))
+        require_once(__DIR__ . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php");
     
     Bootstrap::AutoLoad("settings");
     Routes::Parse();   
