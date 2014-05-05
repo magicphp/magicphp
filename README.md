@@ -1,17 +1,18 @@
-MagicPHP
-========
+## MagicPHP
 
-The simplest framework for PHP, create project like magic, perform on-demand requests, load only the necessary, and write clean and fast code.
+[![Total Downloads](https://img.shields.io/packagist/dm/magicphp/framework.svg)](https://packagist.org/packages/magicphp/magicphp)
+[![Latest Version](http://img.shields.io/github/tag/magicphp/framework.svg)](https://github.com/andrehrf/magicphp/releases)
 
-#Hello World
-<pre><code>Routes::SetDynamicRoute(function(){   
-    Storage::Set("title","Hello World");
-    Output::SetNamespace("helloworld");
-    Output::SetTemplate(Storage::Join("dir.shell.default.tpl", "index.tpl"));
-    Output::AppendCSS(Storage::Join("dir.shell.default.css", "index.css"));
-    Output::Send();
-});</code></pre>
+The idea is to be simple! There are many PHP frameworks on the Internet with generic solutions and dozens of options for simple tasks, using complex models and tiring documentation. The MagicPHP have a different proposal, start your application with minimal use and demand modules, has complete freedom to use any feature available in a simple way.
 
-See the documentation at:
+## Official Documentation
 
-http://magicphp.com.br
+Documentation for the entire framework can be found on the [MagicPHP website](http://laravel.com/docs).
+
+### Contributing To Laravel
+
+**All issues and pull requests should be filed on the [laravel/framework](https://github.com/andrehrf/magicphp) repository.**
+
+### License
+
+The MagicPHP framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
