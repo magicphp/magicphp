@@ -4,6 +4,7 @@
      * 
      * @package     MagicPHP
      * @author      André Henrique da Rocha Ferreira <andrehrf@gmail.com>
+     * @copyright   Copyright (c) 2013, T&M Network, Inc.
      * @link        https://github.com/andrehrf/magicphp MagicPHP(tm)
      * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
      */
@@ -68,60 +69,100 @@
         public static function Parse(){
             $oThis = self::CreateInstanceIfNotExists();
             $sRoot = str_replace("index.php", "", $_SERVER["SCRIPT_NAME"]);
-            $sUri = ($sRoot != "/") ? str_replace($sRoot, "", $_SERVER["REQUEST_URI"])."@" : substr($_SERVER["REQUEST_URI"], 1, strlen($_SERVER["REQUEST_URI"])-1)."@";
+            $sUri = ($sRoot != "/") ? str_replace($sRoot, "", $_SERVER["REQUEST_URI"]) : substr($_SERVER["REQUEST_URI"], 1, strlen($_SERVER["REQUEST_URI"])-1);
             $aParsedRoute = explode("/", $sUri);
             $mID = (array_key_exists(1, $aParsedRoute)) ? $aParsedRoute[1] : null;
             $sMethod = $oThis->Restful();  
             $oThis->RestParams();
-            
-            Storage::Set("route.root", "//".$_SERVER["SERVER_NAME"].str_replace("index.php", "", $_SERVER["SCRIPT_NAME"]));
 
             if(!$oThis->bOverloadFrontend){
                 $bResult = Bootstrap::AutoLoad(((!empty($aParsedRoute[0]) && $aParsedRoute[0] != "/" ) ? strtolower(str_replace("@", "", $aParsedRoute[0])) : "main"));
-                
+
                 if(!$bResult)
                     Bootstrap::AutoLoad("main");
             }
-            
-            //$sUri = str_repeat("*", ".*?", $sUri);//Removendo path
-            $sUri = preg_replace("/\?(.*?)@/", "@", $sUri);//Removendo path
-            $sUri = preg_replace("/\#(.*?)@/", "@", $sUri);//Removendo path
-               
+            $sUri = preg_replace("/\?.*$/", "", $sUri);//Removendo path
+            $sUri = preg_replace("/\#.*$/", "", $sUri);//Removendo path
             $bCall = false;
-          
-            foreach($oThis->aRoutes as $sRoute => $fFunc){
-                $sRoute = preg_replace("/{.*?}/i", "(.*?)", $sRoute);
-                $sRoute = str_replace("/", "\/", $sRoute);
-                                   
-                if(preg_match_all("/@".$sRoute."@/", "@".$sMethod."_".$sUri, $aMatches)){
+
+
+            $aIdent = array("int" => "\d+",
+                            "str" => "\w+",
+                            "flt" => "[\d.]+");
+            //echo "\n".$sUri;
+            foreach($oThis->aRoutes as $sRoute => $fFunc){ 
+                //echo "\n Antes:".$sRoute;  
+                if (preg_match_all('/{(?P<field>\w+)(:((?P<type>\w{3,3})|regex\((?P<regex>.*)\)))?(:(?P<notnull>notnull))?}/i',$sRoute, $aMatches)){
+                    if (preg_match('/(?P<pre>.*\w)\/\{/i',$sRoute, $aMatch)){
+                        $sOk = str_replace('/', '\/', $aMatch['pre']);
+                        $sRoute = str_replace($aMatch['pre'], $sOk, $sRoute);
+                    } 
+                    foreach ($aMatches['field'] as $iKey => $sValue) {
+                        if ($aMatches['regex'][$iKey]){
+                            if ($aMatches['notnull'][$iKey] == 'notnull'){
+                                $sRoute = preg_replace('/\/{'.$aMatches['field'][$iKey].':regex('.$aMatches['regex'][$iKey].'):notnull}/i',"\/(".$aMatches['regex'][$iKey].")", $sRoute);
+                            }else{
+                                $sRoute = preg_replace('/\/{'.$aMatches['field'][$iKey].':regex('.$aMatches['regex'][$iKey].')}/i',"\/?(".$aMatches['regex'][$iKey].")?", $sRoute);                                                                                
+                            }
+                        }else{
+                            if ($aMatches['type'][$iKey]){ 
+                                if ($aMatches['notnull'][$iKey] == 'notnull'){
+                                    $sRoute = preg_replace('/\/{'.$aMatches['field'][$iKey].':'.$aMatches['type'][$iKey].':notnull}/i',"\/(".$aIdent[$aMatches['type'][$iKey]].")", $sRoute);                                        
+                                }else{
+                                    $sRoute = preg_replace('/\/?{'.$aMatches['field'][$iKey].':'.$aMatches['type'][$iKey].'}/i',"\/?(".$aIdent[$aMatches['type'][$iKey]].")?", $sRoute);                                        
+                                }
+                            }else{
+                                if ($aMatches['notnull'][$iKey] == 'notnull'){
+                                    $sRoute = preg_replace('/\/{'.$aMatches['field'][$iKey].':notnull}/i',"\/([^\/]*)", $sRoute);                                        
+                                }else{
+                                    $sRoute = preg_replace("/\/?{".$aMatches['field'][$iKey]."}/", "\/?([^\/]*)?", $sRoute);                                                                                            
+                                }
+                            }
+                        } 
+                    }
+                }else{
+                    $sRoute = str_replace('/', '\/', $sRoute);
+                }                    
+
+                $sBaseFolder = substr($sRoot, 0,strlen($sRoot)-1);
+                if ($sBaseFolder){
+                    if (substr($sBaseFolder, 0,1) == '/'){
+                        $sBaseFolder = substr($sBaseFolder, 1, strlen($sBaseFolder)-1);
+                    }
+                    $sBaseFolder = str_replace('/', '\/', $sBaseFolder);
+                    preg_match('/^[^_]+/', $sRoute, $sMatch);
+                    if ($sMatch){
+                        $sRoute = str_replace($sMatch[0]."_", "", $sRoute);
+                        $sRoute = $sMatch[0]."_".$sBaseFolder.$sRoute;
+                    }
+                }
+                if(preg_match_all("/^".$sRoute."\/?$/i", $sMethod."_".$sUri, $aMatches)){
+                    //echo "\n".$sRoute."\n";
                     $aParams = array();
-                    
                     foreach($aMatches as $iKey => $aResult){
                         if($iKey > 0){
-                            $sParam = (strpos($aResult[0], "/")) ? preg_replace("/@*\/(.*?)@/", "", "@".$aResult[0]."@") : $aResult[0];
-                            $aParams[] = str_replace("@", "", $sParam);
+                            $aParams[] = $aResult[0];
                         }
                     }
-                                            
+
                     $bCall = true; 
                     Storage::Set("route", $sRoute);
-                                                             
+
                     if(is_array($fFunc)){
                         if(is_array($fFunc[1]))
                             $aParams = array_merge($fFunc[1], $aParams);
                         else
                             $aParams = array_merge(array($fFunc[1]), $aParams);
-                            
+
                         call_user_func_array($fFunc[0], $aParams);
                     }
                     else{
                         call_user_func_array($fFunc, $aParams);
                     }
-                                        
+
                     break;
                 }              
-            }
-                          
+            }                
             if(array_key_exists("__dynamicroute", $oThis->aRoutes) && !$bCall)
                 call_user_func($oThis->aRoutes["__dynamicroute"]);  
             else
