@@ -141,6 +141,9 @@
                 $oThis->sBuffer = str_replace("{\$template}", $sTemplate, $sMasterpage);
             else
                 $oThis->sBuffer = $sTemplate;
+
+            if(Storage::Get("app.minified"))
+                $oThis->SanitizeOutput($oThis->sBuffer);
             
             $oThis->IncludeTemplate();
         }
@@ -495,5 +498,29 @@
             catch(Exception $e){
                 die($e->getMessage());
             }
+        }
+
+        /**
+         * Function to minify output
+         * @static
+         * @access public
+         * @param string $sBuffer HTML
+         * @return  void
+         */
+        public static function SanitizeOutput($sBuffer) {
+
+            $aSearch = array(
+                            '/\>[^\S ]+/s',  
+                            '/[^\S ]+\</s',  
+                            '/(\s)+/s'       
+                            );
+
+            $aReplace = array(
+                            '>',
+                            '<',
+                            '\\1'
+                            );
+
+            $oThis->sBuffer = preg_replace($aSearch, $aReplace, $sBuffer);
         }
     }
