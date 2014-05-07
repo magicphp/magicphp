@@ -7,3 +7,4 @@
     ini_set("display_errors", "off");
     Storage::Set("app.charset", "UTF-8");
     Storage::Set("debug", true);
+    Storage::Set("app.minified", true);
