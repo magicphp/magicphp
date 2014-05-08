@@ -1,7 +1,7 @@
 <?php
     /**
      * Output Controller
-     * 
+     *
      * @package     MagicPHP
      * @author      André Henrique da Rocha Ferreira <andrehrf@gmail.com>
      * @link        https://github.com/andrehrf/magicphp MagicPHP(tm)
@@ -11,7 +11,7 @@
     class Output{
         /**
          * Lista de status do protocolo HTTP
-         * 
+         *
          * @var array
          * @access private
          */
@@ -54,47 +54,47 @@
                                      502 => "HTTP/1.1 502 Bad Gateway",
                                      503 => "HTTP/1.1 503 Service Unavailable",
                                      504 => "HTTP/1.1 504 Gateway Time-out");
-        
+
         /**
-         * Namespace output 
-         * 
+         * Namespace output
+         *
          * @static
          * @access private
-         * @var string 
+         * @var string
          */
         private $sNamespace = null;
-        
+
         /**
          * Buffer
-         * 
+         *
          * @static
          * @access private
-         * @var string 
+         * @var string
          */
-        private $sBuffer = null; 
-        
+        private $sBuffer = null;
+
         /**
          * List of CSS files output
-         * 
+         *
          * @static
          * @access private
-         * @var array 
+         * @var array
          */
         private $aCSS = array();
-        
+
         /**
          * List of Javascript files output
-         * 
+         *
          * @static
          * @access private
-         * @var array 
+         * @var array
          */
         private $aJS = array();
 
-        
+
         /**
          * Function to auto instance
-         * 
+         *
          * @static
          * @access public
          * @return \self
@@ -106,27 +106,27 @@
                 $oInstance = new self();
 
             return $oInstance;
-        } 
-        
+        }
+
         /**
          * Function to configure namespace output
-         * 
+         *
          * @access public
          * @param string $sNamespace
          * @return void
          */
         public static function SetNamespace($sNamespace){
             $oThis = self::CreateInstanceIfNotExists();
-            
+
             if(is_string($sNamespace)){
-                $sNamespace = strtolower(str_replace(" ", "_", $sNamespace));                
+                $sNamespace = strtolower(str_replace(" ", "_", $sNamespace));
                 $oThis->sNamespace = $sNamespace;
             }
         }
 
         /**
          * Function to set the masterpage and template
-         * 
+         *
          * @access public
          * @param string $sTemplateFilename
          * @param string $sMasterpageFilename
@@ -136,163 +136,163 @@
             $oThis = self::CreateInstanceIfNotExists();
             $sTemplate = (file_exists($sTemplateFilename)) ? file_get_contents($sTemplateFilename) : null;
             $sMasterpage = (file_exists($sMasterpageFilename)) ? file_get_contents($sMasterpageFilename) : null;
-            
+
             if(!is_null($sMasterpage))
                 $oThis->sBuffer = str_replace("{\$template}", $sTemplate, $sMasterpage);
             else
                 $oThis->sBuffer = $sTemplate;
 
-            if(Storage::Get("app.minified"))
+            if(Storage::Get("app.minified") && !Storage::Get("debug"))
                 $oThis->SanitizeOutput($oThis->sBuffer);
-            
+
             $oThis->IncludeTemplate();
         }
 
         /**
          * Function to add CSS file to template
-         * 
+         *
          * @access public
          * @param string $sFilenameCSS Path to the CSS file
          * @return void
          */
         public static function AppendCSS($sFilenameCSS){
             $oThis = self::CreateInstanceIfNotExists();
-            
-            if(file_exists($sFilenameCSS))      
+
+            if(file_exists($sFilenameCSS))
                 $oThis->aCSS[] = file_get_contents($sFilenameCSS);
         }
-        
+
         /**
          * Function to add Javascript file to template
-         * 
+         *
          * @access public
          * @param string $sFilenameJS Path to the Javascript file
          * @return void
          */
         public static function AppendJS($sFilenameJS){
             $oThis = self::CreateInstanceIfNotExists();
-            
-            if(file_exists($sFilenameJS))      
+
+            if(file_exists($sFilenameJS))
                 $oThis->aJS[] = file_get_contents($sFilenameJS);
         }
-        
+
         /**
          * CACHE FUNCTIONS
          */
-        
+
         /**
          * Function to create the CSS file cache
-         * 
+         *
          * @access public
          * @param boolean $bForce Forcing creation
          * @return void
          */
-        public static function CreateCacheCSS($bForce){ 
+        public static function CreateCacheCSS($bForce){
             $oThis = self::CreateInstanceIfNotExists();
-            
+
             if(count($oThis->aCSS) > 0){
                 $sCacheFilename = Storage::Join("dir.cache", strtolower($oThis->sNamespace).".css");
                 Storage::Set("cache.css", Storage::Join("route.root", "cache/".strtolower($oThis->sNamespace).".css"));
-                
+
                 if(!file_exists($sCacheFilename) || $bForce || Storage::Get("debug", false)){
                     $sBuffer = "";
 
                     foreach($oThis->aCSS as $sAppendBuffer)
                         $sBuffer .= $sAppendBuffer;
-                    
+
                     if(!Storage::Get("debug", false))
                         $sBuffer = $oThis->MinifyCSS($sBuffer);
-                    
+
                     file_put_contents($sCacheFilename, $sBuffer);
                 }
-            } 
+            }
         }
-        
+
         /**
          * Function to compress CSS file cache
-         * 
+         *
          * @access public
          * @param string $sStr
          * @return string
          */
-        private static function MinifyCSS($sStr){ 
-            $sStr = preg_replace('!/\*.*?\*/!s','', $sStr); 
-            $sStr = preg_replace('/\n\s*\n/',"\n", $sStr); 
-            $sStr = preg_replace('/[\n\r \t]/',' ', $sStr); 
-            $sStr = preg_replace('/ +/',' ', $sStr); 
-            $sStr = preg_replace('/ ?([,:;{}]) ?/','$1',$sStr); 
-            $sStr = preg_replace('/;}/','}',$sStr); 
-            return $sStr; 
-        } 
-        
+        private static function MinifyCSS($sStr){
+            $sStr = preg_replace('!/\*.*?\*/!s','', $sStr);
+            $sStr = preg_replace('/\n\s*\n/',"\n", $sStr);
+            $sStr = preg_replace('/[\n\r \t]/',' ', $sStr);
+            $sStr = preg_replace('/ +/',' ', $sStr);
+            $sStr = preg_replace('/ ?([,:;{}]) ?/','$1',$sStr);
+            $sStr = preg_replace('/;}/','}',$sStr);
+            return $sStr;
+        }
+
         /**
          * Function to create the Javascript file cache
-         * 
+         *
          * @access public
          * @param boolean $bForce Forcing creation
          * @return void
          */
-        public static function CreateCacheJS($bForce){ 
+        public static function CreateCacheJS($bForce){
             $oThis = self::CreateInstanceIfNotExists();
-            
+
             if(count($oThis->aJS) > 0){
                 $sCacheFilename = Storage::Join("dir.cache", strtolower($oThis->sNamespace).".js");
                 Storage::Set("cache.js", Storage::Join("route.root", "cache/".strtolower($oThis->sNamespace).".js"));
-                
+
                 if(!file_exists($sCacheFilename) || $bForce || Storage::Get("debug", false)){
                     $sBuffer = "";
 
                     foreach($oThis->aJS as $sAppendBuffer)
                         $sBuffer .= $sAppendBuffer;
-                    
+
                     file_put_contents($sCacheFilename, $sBuffer);
                 }
-            } 
+            }
         }
-        
+
         /**
          * FUNCTIONS OF TREATMENT OF OUTPUT
          */
-        
+
         /**
          * Function to include subtemplates
-         * 
+         *
          * @access public
          * @param string $sBuffer
          * @return void
          */
         private static function IncludeTemplate(){
             $oThis = self::CreateInstanceIfNotExists();
-            
+
             $oThis->ReplaceVars();
             $oThis->sBuffer = trim($oThis->sBuffer);
             $Offset = 0;
 
             while(preg_match('/{include\s*(.*?)}/i', $oThis->sBuffer, $aMatches, PREG_OFFSET_CAPTURE, $Offset)){
                 $sFilename = str_replace(array("'", '"'), "", $aMatches[1][0]);
-                
+
                 if(file_exists($sFilename)){
                     $sBufferAppend = file_get_contents($sFilename);
                     $oThis->sBuffer = str_replace($aMatches[0][0], $sBufferAppend, $oThis->sBuffer);
                 }
                 else{
-                   $oThis->sBuffer = str_replace($aMatches[0][0], "", $oThis->sBuffer); 
-                }            
-                
+                   $oThis->sBuffer = str_replace($aMatches[0][0], "", $oThis->sBuffer);
+                }
+
                 $Offset = $aMatches[0][1]+strlen($aMatches[0][0]);
             }
         }
-              
+
         /**
          * Function to handle variables required in the template
-         * 
+         *
          * @access public
          * @param string $sBuffer Buffer Template
          * @return void
          */
-        private static function ReplaceVars(){	
+        private static function ReplaceVars(){
             $oThis = self::CreateInstanceIfNotExists();
-            
+
             $aP = array();
             $iOffset = 0;
 
@@ -312,10 +312,10 @@
                 $iOffset = $aMatches[0][1]+strlen($aMatches[0][0]);
             }
         }
-        
+
         /**
          * Function to remove variables that were not stored
-         * 
+         *
          * @access public
          * @param string $sBuffer Buffer Template
          * @return void
@@ -329,10 +329,10 @@
                 $iOffset = $aMatches[0][1]+strlen($aMatches[0][0]);
             }
         }
-        
+
         /**
          * Function for treatment of conditionals in the template
-         * 
+         *
          * @access public
          * @param string $sBuffer Buffer Template
          * @return void
@@ -343,13 +343,13 @@
             $oThis->sBuffer = str_replace("{endif}", "<?php } ?>", $oThis->sBuffer);
             $oThis->sBuffer = str_replace(array('{if }', '{if  }'), "<?php if(false){ ?>", $oThis->sBuffer);
 
-            //IF 
+            //IF
             $Offset = 0;
 
             while(preg_match('/{if\s*(.*?)}/i', $oThis->sBuffer, $aMatches, PREG_OFFSET_CAPTURE, $Offset)){
                 $oThis->sBuffer = str_replace($aMatches[0][0], "<?php if(".$aMatches[1][0]."){ ?>", $oThis->sBuffer);
                 $Offset = $aMatches[0][1]+strlen($aMatches[0][0]);
-            }	
+            }
 
             //Elseif
             $Offset = 0;
@@ -359,10 +359,10 @@
                 $Offset = $aMatches[0][1]+strlen($aMatches[0][0]);
             }
         }
-        
+
         /**
          * Function to replace the template lists
-         * 
+         *
          * @static
          * @access public
          * @param string $sListName
@@ -373,37 +373,37 @@
             $oThis = self::CreateInstanceIfNotExists();
             $oThis->sBuffer = str_replace("{end}", "<?php } ?>", $oThis->sBuffer);
             $Offset = 0;
-            
+
             $aC = "abcdefghijklmnopqrstuvxzywABCDEFGHIJKLMNOPQRSTUVXZWY";
             $sHash = "";
-            
+
             for($i = 0; $i < 10; $i++)
                 $sHash .= substr($aC, rand(0, strlen($aC)), 1);
-                        
+
             while(preg_match('/{list\:(.*?)}/i', $oThis->sBuffer, $aMatches, PREG_OFFSET_CAPTURE, $Offset)){
                 if($aMatches[1][0] == $sListName){
                     if(!empty($aData))
                         $sList = "\${$sHash} = unserialize(base64_decode('". base64_encode(serialize($aData)) ."'));";
                     else
                         $sList = "\${$sHash} = array();";
-                                                         
+
                     $oThis->sBuffer = str_replace($aMatches[0][0], "<?php  ".$sList."\r\n if(count(\${$sHash}) > 0) foreach(\${$sHash} as \${$sListName}){ ?>", $oThis->sBuffer);
                 }
-                
+
                 $Offset = $aMatches[0][1]+strlen($aMatches[0][0]);
             }
-            
+
             $Offset = 0;
-            
+
             while(preg_match('/{list\.(.*?)\.(.*?)}/i', $oThis->sBuffer, $aMatches, PREG_OFFSET_CAPTURE, $Offset)){
                 $oThis->sBuffer = str_replace($aMatches[0][0], "<?php echo \$".$aMatches[1][0]."[\"".$aMatches[2][0]."\"]; ?>", $oThis->sBuffer);
                 $Offset = $aMatches[0][1]+strlen($aMatches[0][0]);
             }
         }
-        
+
         /**
          * Function to extract the template lists
-         * 
+         *
          * @static
          * @access public
          * @param string $sListName
@@ -412,19 +412,19 @@
         public static function ExtractList($sListName){
             $oThis = self::CreateInstanceIfNotExists();
             $iStart = strpos($oThis->sBuffer, "{list:{$sListName}}");
-            
+
             if($iStart > 0)
                 $iEnd = strpos($oThis->sBuffer, "{end}", $iStart);
-            
+
             if($iStart > 0 && $iEnd > 0){
                 $sNewBuffer = substr($oThis->sBuffer, $iStart, $iEnd-$iStart);
                 $oThis->sBuffer = $sNewBuffer."{end}";
             }
         }
-             
+
         /**
          * Function to return HTTP exceptions
-         * 
+         *
          * @static
          * @access public
          * @param integer $iCode Exception Code HTTP
@@ -432,17 +432,17 @@
          */
         public static function SendHTTPCode($iCode){
             $oThis = self::CreateInstanceIfNotExists();
-            
+
             if(array_key_exists($iCode, $oThis->aHTTPStatus)){
                 header($oThis->aHTTPStatus[$iCode]);
                 header("Connection: close");
-                die();                
+                die();
             }
         }
-        
+
         /**
          * Function to output redirection
-         * 
+         *
          * @static
          * @access public
          * @param string $sUrl Url redirection
@@ -450,29 +450,29 @@
          */
         public static function Redirect($sUrl){
             $oThis = self::CreateInstanceIfNotExists();
-           
+
             header($oThis->aHTTPStatus[301]);
             header("Location: ".$sUrl);
             die();
         }
-        
+
         /**
          * Function to precompile template
-         * 
+         *
          * @static
          * @return void
          */
         public static function PreCompile(){
             $oThis = self::CreateInstanceIfNotExists();
             $oThis->IncludeTemplate();
-            $oThis->ReplaceVars(); 
-            $oThis->RemoveUndefinedVars(); 
-            $oThis->CheckConditions(); 
+            $oThis->ReplaceVars();
+            $oThis->RemoveUndefinedVars();
+            $oThis->CheckConditions();
         }
-        
+
         /**
          * Function to send output
-         * 
+         *
          * @access public
          * @return void
          */
@@ -481,17 +481,17 @@
             $oThis->CreateCacheCSS(Storage::Get("debug", false));
             $oThis->CreateCacheJS(Storage::Get("debug", false));
             $oThis->IncludeTemplate();
-            $oThis->ReplaceVars(); 
-            $oThis->RemoveUndefinedVars(); 
-            $oThis->CheckConditions(); 
+            $oThis->ReplaceVars();
+            $oThis->RemoveUndefinedVars();
+            $oThis->CheckConditions();
             Events::Call("BeforeSendingOutput");
-            
+
             header('HTTP/1.1 200 OK');
             header("Content-Type: text/html; charset=" . strtoupper(Storage::Get("app.charset", "UTF-8")), true);
-                  
+
             try{
                 //var_dump($oThis->sBuffer);die();
-                
+
                 eval('?> ' . $oThis->sBuffer);
                 die();
             }
@@ -508,11 +508,11 @@
          * @return  void
          */
         public static function SanitizeOutput($sBuffer) {
+            $oThis = self::CreateInstanceIfNotExists();
 
-            $aSearch = array(
-                            '/\>[^\S ]+/s',  
-                            '/[^\S ]+\</s',  
-                            '/(\s)+/s'       
+            $aSearch = array('/\>[^\S ]+/s',
+                             '/[^\S ]+\</s',
+                             '/(\s)+/s'
                             );
 
             $aReplace = array(
