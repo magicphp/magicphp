@@ -490,7 +490,8 @@
             header("Content-Type: text/html; charset=" . strtoupper(Storage::Get("app.charset", "UTF-8")), true);
 
             try{
-                //var_dump($oThis->sBuffer);die();
+
+                $oThis->ClearList();
 
                 eval('?> ' . $oThis->sBuffer);
                 die();
@@ -522,5 +523,28 @@
                             );
 
             $oThis->sBuffer = preg_replace($aSearch, $aReplace, $sBuffer);
+        }
+
+        /**
+         * Function to remove empty lists inside template
+         * 
+         * @static
+         * @access public
+         * @return void
+         */
+        public static function ClearList(){
+            $oThis = self::CreateInstanceIfNotExists();
+            if(preg_match('/{list\:(.*?)}/', $oThis->sBuffer, $aMatches) == 1)
+                $sListName = $aMatches[1];
+
+            $iStart = strpos($oThis->sBuffer, "{list:{$sListName}}");
+
+            if($iStart > 0)
+                $iEnd = strpos($oThis->sBuffer, "{end}", $iStart);
+
+            if($iStart > 0 && $iEnd > 0)
+                $sList = substr($oThis->sBuffer, $iStart, $iEnd-$iStart)."{end}";
+
+            $oThis->sBuffer = str_replace($sList, "", $oThis->sBuffer);
         }
     }
