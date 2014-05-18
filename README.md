@@ -8,7 +8,7 @@ Documentation for the entire framework can be found on the [MagicPHP website](ht
 
 ### Contributing To MagicPHP
 
-**All issues and pull requests should be filed on the [andrehrf/magicphp](https://github.com/andrehrf/magicphp) repository.**
+**All issues and pull requests should be filed on the [andrehrf/magicphp](https://github.com/magicphp/magicphp) repository.**
 
 ### License
 
