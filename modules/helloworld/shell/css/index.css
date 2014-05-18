@@ -1,0 +1,34 @@
+@import url(http://fonts.googleapis.com/css?family=Cantora+One);
+
+body{
+    background-color: #EFEFEF;
+    font-family: 'Cantora One', sans-serif;
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+    width: 100%;
+}
+
+.helloworld{
+    margin: 20px auto;
+    width: 150px;
+    padding: 20px;
+    top: 50px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #FFF;
+    -moz-box-shadow: 0 0 10px #e5e5e5;
+    -webkit-box-shadow: 0 0 10px #e5e5e5;
+    box-shadow: 0 0 10px #e5e5e5;
+}
+
+.helloworld:hover{
+    background-color: #FAFAFA;
+}
+
+.helloworld h1{
+    margin: 0px;
+    height: 40px;
+}

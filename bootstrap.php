@@ -3,8 +3,8 @@
      * Bootstrap
      * 
      * @package     MagicPHP
-     * @author      André Henrique da Rocha Ferreira <andrehrf@gmail.com>
-     * @link        https://github.com/andrehrf/magicphp MagicPHP(tm) 
+     * @author      André Ferreira <andrehrf@gmail.com>
+     * @link        https://github.com/magicphp/magicphp MagicPHP(tm) 
      * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
      */
 
@@ -42,8 +42,6 @@
                        
             //Configuring basic directories
             Storage::Set("dir.root", __DIR__ . SP);
-            Storage::Set("dir.shell", __DIR__ . SP . "shell" . SP);
-            Storage::Set("dir.core", __DIR__ . SP . "core" . SP);
             Storage::Set("dir.cache", __DIR__ . SP . "cache" . SP);
             Storage::Set("dir.modules", __DIR__ . SP . "modules" . SP);
             
@@ -53,6 +51,9 @@
             Storage::Set("dir.shell.default.css", Storage::Join("dir.shell.default", "css" . SP));
             Storage::Set("dir.shell.default.js", Storage::Join("dir.shell.default", "js" . SP));
             Storage::Set("dir.shell.default.img", Storage::Join("dir.shell.default", "img" . SP));
+            
+            //Configuring default route
+            Storage::Set("route.root", "//".$_SERVER["SERVER_NAME"].str_replace("index.php", "", $_SERVER["SCRIPT_NAME"]));
                     
             $oThis->LoadModules();
         }
@@ -70,7 +71,7 @@
                 
                 //putting in small letters the class name
                 $sClassName = strtolower($sClassName); 
-                $aDiretoryList = array(__DIR__ . SP . "core" . SP, __DIR__ . SP);
+                $aDiretoryList = array(__DIR__ . SP);
                 
                 if(class_exists("Storage")){
                     $aDynamicList = Storage::Get("class.list");
@@ -122,6 +123,9 @@
                 
                 if(file_exists($sModuleDiretory . SP . "routes.php") && $bStatus)
                     require_once($sModuleDiretory . SP . "routes.php");
+                
+                if(file_exists($sModuleDiretory . SP . "events.php") && $bStatus)
+                    require_once($sModuleDiretory . SP . "events.php");
             }
         }
     }
