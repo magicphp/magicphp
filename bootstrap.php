@@ -53,7 +53,7 @@
             Storage::Set("dir.shell.default.img", Storage::Join("dir.shell.default", "img" . SP));
             
             //Configuring default route
-            Storage::Set("route.root", "//".$_SERVER["SERVER_NAME"].str_replace("index.php", "", $_SERVER["SCRIPT_NAME"]));
+            Storage::Set("route.root", "//".$_SERVER["SERVER_NAME"].str_replace(array("index.php", " "), array("", "%20"), $_SERVER["SCRIPT_NAME"]));//Bugfix
                     
             $oThis->LoadModules();
         }
