@@ -45,13 +45,6 @@
             Storage::Set("dir.cache", __DIR__ . SP . "cache" . SP);
             Storage::Set("dir.modules", __DIR__ . SP . "modules" . SP);
             
-            //Setting the default template directories
-            Storage::Set("dir.shell.default", Storage::Join("dir.shell", "default" . SP));
-            Storage::Set("dir.shell.default.tpl", Storage::Join("dir.shell.default", "tpl" . SP));
-            Storage::Set("dir.shell.default.css", Storage::Join("dir.shell.default", "css" . SP));
-            Storage::Set("dir.shell.default.js", Storage::Join("dir.shell.default", "js" . SP));
-            Storage::Set("dir.shell.default.img", Storage::Join("dir.shell.default", "img" . SP));
-            
             //Configuring default route
             Storage::Set("route.root", "//".$_SERVER["SERVER_NAME"].str_replace(array("index.php", " "), array("", "%20"), $_SERVER["SCRIPT_NAME"]));//Bugfix
                     
@@ -115,17 +108,19 @@
                 else
                     $bStatus = false;
                 
-                if(file_exists($sModuleDiretory . SP . "settings.php") && $bStatus)
-                    require_once($sModuleDiretory . SP . "settings.php");       
-                        
-                if(file_exists($sModuleDiretory . SP . "include.php") && $bStatus)
-                    require_once($sModuleDiretory . SP . "include.php");  
-                
-                if(file_exists($sModuleDiretory . SP . "routes.php") && $bStatus)
-                    require_once($sModuleDiretory . SP . "routes.php");
-                
-                if(file_exists($sModuleDiretory . SP . "events.php") && $bStatus)
-                    require_once($sModuleDiretory . SP . "events.php");
+                if($bStatus){
+                    if(file_exists($sModuleDiretory . SP . "settings.php") && $bStatus)
+                        require_once($sModuleDiretory . SP . "settings.php");       
+
+                    if(file_exists($sModuleDiretory . SP . "include.php") && $bStatus)
+                        require_once($sModuleDiretory . SP . "include.php");  
+
+                    if(file_exists($sModuleDiretory . SP . "routes.php") && $bStatus)
+                        require_once($sModuleDiretory . SP . "routes.php");
+
+                    if(file_exists($sModuleDiretory . SP . "events.php") && $bStatus)
+                        require_once($sModuleDiretory . SP . "events.php");
+                }
             }
         }
     }

@@ -20,6 +20,7 @@
             Output::SetNamespace("helloworld");
             Output::SetTemplate(Storage::Join("module.helloworld.shell.tpl", "index.tpl"));
             Output::AppendCSS(Storage::Join("module.helloworld.shell.css", "index.css"));
+            Output::AppendCSS(Storage::Join("module.helloworld.shell.css", "debug.css"));
             Output::Send();
         }
     }
