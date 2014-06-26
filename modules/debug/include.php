@@ -11,7 +11,6 @@
     $oModule = Modules::Append("debug", __DIR__ . SP);
     $oModule->Set("name", "MagicPHP Debug")
             ->Set("author", "André Ferreira <andrehrf@gmail.com>")
-            ->Dependence("magicphp", "0.1")
             ->Start();
    
     Routes::Set("debug", "GET", "Debug::Display");
