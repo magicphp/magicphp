@@ -2,8 +2,6 @@
     /**
      * Settings
      */
-
-    error_reporting(0);//Disable Errors
     
     //Default Settings
     Storage::Set("app.charset", "UTF-8");
