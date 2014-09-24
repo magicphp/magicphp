@@ -10,7 +10,7 @@
 
     if($_SERVER["REMOTE_ADDR"] == "127.0.0.1" || $_SERVER["REMOTE_ADDR"] == "::1"){
         ini_set("display_errors", "on");
-        error_log(E_ERROR);
+        error_reporting(E_ERROR);
     }
 
     if(file_exists(__DIR__ . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php"))
