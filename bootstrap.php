@@ -66,7 +66,7 @@
                 $bResult = false;
                 
                 //putting in small letters the class name
-                $sClassName = strtolower($sClassName); 
+                $sClassName = str_replace("\\", SP, strtolower($sClassName));
                 $aDiretoryList = array(__DIR__ . SP);
                 
                 if(class_exists("Storage")){
@@ -76,15 +76,23 @@
                         $aDiretoryList = array_merge($aDiretoryList, $aDynamicList);
                 }
                                                 
-                foreach($aDiretoryList as $sDiretory){
-                    if(file_exists($sDiretory . $sClassName . ".class.php") || file_exists($sDiretory . $sClassName . ".php")){
-                        if(file_exists($sDiretory . $sClassName . ".class.php"))
-                            require_once($sDiretory . $sClassName . ".class.php");
-                        else if(file_exists($sDiretory . $sClassName . ".php"))
-                            require_once($sDiretory . $sClassName . ".php");  
-                        
-                        $bResult= true;
-                        break;
+                if(file_exists(__DIR__ . SP . $sClassName. ".class.php") || file_exists(__DIR__ . SP . $sClassName. ".php")){
+                    if(file_exists(__DIR__ . SP . $sClassName . ".class.php"))
+                        require_once(__DIR__ . SP . $sClassName . ".class.php");
+                    else if(file_exists(__DIR__ . SP . $sClassName . ".php"))
+                        require_once(__DIR__ . SP . $sClassName . ".php");  
+                }
+                else{
+                    foreach($aDiretoryList as $sDiretory){
+                        if(file_exists($sDiretory . $sClassName . ".class.php") || file_exists($sDiretory . $sClassName . ".php")){
+                            if(file_exists($sDiretory . $sClassName . ".class.php"))
+                                require_once($sDiretory . $sClassName . ".class.php");
+                            else if(file_exists($sDiretory . $sClassName . ".php"))
+                                require_once($sDiretory . $sClassName . ".php");  
+                            
+                            $bResult= true;
+                            break;
+                        }
                     }
                 }
                 
