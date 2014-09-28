@@ -111,6 +111,22 @@
          * @return void
          */
         public static function LoadApp(){
+            //If the module exists Express should be loaded first
+            if(is_dir(Storage::Join("dir.app", "express"))){
+                if(file_exists(Storage::Join("dir.app", "express" . SP . "settings.php")))
+                    require_once(Storage::Join("dir.app", "express" . SP . "settings.php"));     
+                
+                if(file_exists(Storage::Join("dir.app", "express" . SP . "include.php")))
+                    require_once(Storage::Join("dir.app", "express" . SP . "include.php")); 
+                
+                if(file_exists(Storage::Join("dir.app", "express" . SP . "routes.php")))
+                    require_once(Storage::Join("dir.app", "express" . SP . "routes.php")); 
+                
+                if(file_exists(Storage::Join("dir.app", "express" . SP . "events.php")))
+                    require_once(Storage::Join("dir.app", "express" . SP . "events.php")); 
+            }
+            
+            //Load Modules
             $aModulesDirectories = glob(Storage::Get("dir.app") . "*", GLOB_ONLYDIR);
             
             foreach($aModulesDirectories as $sModuleDiretory){
@@ -119,7 +135,7 @@
                 else
                     $bStatus = false;
                 
-                if($bStatus){
+                if($bStatus && basename($sModuleDiretory) != "express"){
                     if(file_exists($sModuleDiretory . SP . "settings.php") && $bStatus)
                         require_once($sModuleDiretory . SP . "settings.php");       
 
