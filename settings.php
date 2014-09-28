@@ -5,7 +5,7 @@
     
     //Default Settings
     Storage::Set("app.charset", "UTF-8");
-    Storage::Set("debug", false);
+    Storage::Set("debug", true);
     Storage::Set("app.minified", false);
 
     //Smarty Settings

@@ -8,6 +8,11 @@
      * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
      */
 
+    namespace App\Helloworld\Controllers;
+    
+    use \Output as Output,
+        \Storage as Storage;
+
     class HelloWorld{
         /**
          * Function to display the Hello World screen

@@ -11,5 +11,5 @@
     $oModule->Set("name", "MagicPHP Hello World")
             ->Set("author", "André Ferreira <andrehrf@gmail.com>")
             ->Set("website", "https://magicphp.org")
-            ->Set("licence", "MIT License")
+            ->Set("license", "MIT")
             ->Start();

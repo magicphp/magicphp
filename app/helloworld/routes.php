@@ -9,7 +9,7 @@
      */
 
     Routes::SetOverloadFrontend(true);
-    Routes::Set("", "GET", "HelloWorld::Index");
+    Routes::Set("", "GET", "App\Helloworld\Controllers\Helloworld::Index");
     Routes::SetDynamicRoute(function() {
         Output::SendHTTPCode(404);
     });
