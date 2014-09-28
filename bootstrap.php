@@ -130,12 +130,10 @@
             $aModulesDirectories = glob(Storage::Get("dir.app") . "*", GLOB_ONLYDIR);
             
             foreach($aModulesDirectories as $sModuleDiretory){
-                if(file_exists($sModuleDiretory . SP . "status.txt"))
-                    $bStatus = (intval(file_get_contents($sModuleDiretory . SP . "status.txt")) == 1);
-                else
-                    $bStatus = false;
+                $bStatus = (file_exists($sModuleDiretory . SP . "status.txt")) ? (intval(file_get_contents($sModuleDiretory . SP . "status.txt")) == 1) : false;
+                $bInstaled = file_exists($sModuleDiretory . SP . "settings.php");
                 
-                if($bStatus && basename($sModuleDiretory) != "express"){
+                if($bStatus && $bInstaled && basename($sModuleDiretory) != "express"){
                     if(file_exists($sModuleDiretory . SP . "settings.php") && $bStatus)
                         require_once($sModuleDiretory . SP . "settings.php");       
 
