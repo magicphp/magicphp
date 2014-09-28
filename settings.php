@@ -5,8 +5,8 @@
     
     //Default Settings
     Storage::Set("app.charset", "UTF-8");
-    Storage::Set("debug", true);
-    Storage::Set("app.minified", true);
+    Storage::Set("debug", false);
+    Storage::Set("app.minified", false);
 
     //Smarty Settings
     Storage::Set("smarty.dir.compile", __DIR__ . SP . "public" . SP . "compiles" . SP);
